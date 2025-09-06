@@ -1,0 +1,135 @@
+<nav class="bg-gradient-to-r from-violet-600 to-purple-600 shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <!-- Logo and Brand -->
+            <div class="flex items-center">
+                <div class="flex-shrink-0 flex items-center">
+                    <div class="inline-flex items-center justify-center w-8 h-8 bg-white/20 rounded-lg mr-3">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-white font-bold text-xl">Password Wallet</span>
+                </div>
+            </div>
+            
+            <!-- Navigation Links -->
+            <div class="hidden md:block">
+                <div class="ml-10 flex items-baseline space-x-4">
+                    <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}text-white bg-white/10{% else %}text-violet-200 hover:text-white hover:bg-white/10{% endif %} px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200">
+                        Dashboard
+                    </a>
+                    <a href="{{ url_for('view_accounts') }}" class="{% if request.endpoint == 'view_accounts' %}text-white bg-white/10{% else %}text-violet-200 hover:text-white hover:bg-white/10{% endif %} px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200">
+                        Accounts
+                    </a>
+                    <a href="{{ url_for('add_account') }}" class="{% if request.endpoint == 'add_account' %}text-white bg-white/10{% else %}text-violet-200 hover:text-white hover:bg-white/10{% endif %} px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200">
+                        Add Account
+                    </a>
+                    <a href="{{ url_for('login_monitor') }}" class="{% if request.endpoint == 'login_monitor' %}text-white bg-white/10{% else %}text-violet-200 hover:text-white hover:bg-white/10{% endif %} px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200">
+                        Security
+                    </a>
+                </div>
+            </div>
+            
+            <!-- User Menu -->
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <button onclick="toggleUserMenu()" class="text-white flex items-center space-x-2 hover:bg-white/10 px-3 py-2 rounded-lg transition-all duration-200">
+                        <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                            <span class="text-white text-sm font-medium">{{ session.username[0].upper() if session.username else 'U' }}</span>
+                        </div>
+                        <span class="text-sm font-medium">{{ session.username or 'User' }}</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    
+                    <!-- Dropdown Menu -->
+                    <div id="userMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                        <div class="py-1">
+                            <div class="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
+                                <div class="font-medium">{{ session.username or 'User' }}</div>
+                                <div class="text-xs text-gray-500">Logged in</div>
+                            </div>
+                            <a href="{{ url_for('dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-violet-50 hover:text-violet-600 transition-colors duration-150">
+                                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                                </svg>
+                                Dashboard
+                            </a>
+                            <a href="{{ url_for('view_accounts') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-violet-50 hover:text-violet-600 transition-colors duration-150">
+                                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                </svg>
+                                My Accounts
+                            </a>
+                            <hr class="my-1">
+                            <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150">
+                                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                                </svg>
+                                Sign Out
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mobile menu button -->
+            <div class="md:hidden">
+                <button onclick="toggleMobileMenu()" type="button" class="text-white hover:bg-white/10 p-2 rounded-lg transition-all duration-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div id="mobileMenu" class="hidden md:hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t border-violet-500/30">
+                <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}text-white bg-white/10{% else %}text-violet-200 hover:text-white hover:bg-white/10{% endif %} block px-3 py-2 rounded-md text-base font-medium">
+                    Dashboard
+                </a>
+                <a href="{{ url_for('view_accounts') }}" class="{% if request.endpoint == 'view_accounts' %}text-white bg-white/10{% else %}text-violet-200 hover:text-white hover:bg-white/10{% endif %} block px-3 py-2 rounded-md text-base font-medium">
+                    Accounts
+                </a>
+                <a href="{{ url_for('add_account') }}" class="{% if request.endpoint == 'add_account' %}text-white bg-white/10{% else %}text-violet-200 hover:text-white hover:bg-white/10{% endif %} block px-3 py-2 rounded-md text-base font-medium">
+                    Add Account
+                </a>
+                <a href="{{ url_for('login_monitor') }}" class="{% if request.endpoint == 'login_monitor' %}text-white bg-white/10{% else %}text-violet-200 hover:text-white hover:bg-white/10{% endif %} block px-3 py-2 rounded-md text-base font-medium">
+                    Security
+                </a>
+                <a href="{{ url_for('logout') }}" class="text-red-200 hover:text-red-100 hover:bg-red-500/20 block px-3 py-2 rounded-md text-base font-medium">
+                    Sign Out
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+    function toggleUserMenu() {
+        const menu = document.getElementById('userMenu');
+        menu.classList.toggle('hidden');
+    }
+    
+    function toggleMobileMenu() {
+        const menu = document.getElementById('mobileMenu');
+        menu.classList.toggle('hidden');
+    }
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(event) {
+        const userMenu = document.getElementById('userMenu');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        if (!event.target.closest('.relative')) {
+            userMenu.classList.add('hidden');
+        }
+        
+        if (!event.target.closest('.md\\:hidden') && !event.target.closest('#mobileMenu')) {
+            mobileMenu.classList.add('hidden');
+        }
+    });
+</script>

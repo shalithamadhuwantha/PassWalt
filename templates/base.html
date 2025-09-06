@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Password Wallet{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                        'bounce-in': 'bounceIn 0.8s ease-out',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 1; transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body class="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-50 flex flex-col">
+    
+    <!-- Navigation (only show if user is logged in) -->
+    {% if session.user_id %}
+    <nav class="bg-white/80 backdrop-blur-lg shadow-sm border-b border-white/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <div class="w-8 h-8 bg-gradient-to-r from-violet-600 to-purple-600 rounded-lg mr-3"></div>
+                        <span class="text-xl font-bold text-gray-800">Password Wallet</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}text-violet-600 bg-violet-100{% else %}text-gray-600 hover:text-violet-600{% endif %} px-3 py-2 rounded-md text-sm font-medium transition-colors">Dashboard</a>
+                    <a href="{{ url_for('view_accounts') }}" class="{% if request.endpoint == 'view_accounts' %}text-violet-600 bg-violet-100{% else %}text-gray-600 hover:text-violet-600{% endif %} px-3 py-2 rounded-md text-sm font-medium transition-colors">Accounts</a>
+                    <a href="{{ url_for('add_account') }}" class="{% if request.endpoint == 'add_account' %}text-violet-600 bg-violet-100{% else %}text-gray-600 hover:text-violet-600{% endif %} px-3 py-2 rounded-md text-sm font-medium transition-colors">Add Account</a>
+                    <a href="{{ url_for('login_monitor') }}" class="{% if request.endpoint == 'login_monitor' %}text-violet-600 bg-violet-100{% else %}text-gray-600 hover:text-violet-600{% endif %} px-3 py-2 rounded-md text-sm font-medium transition-colors">Monitor</a>
+                    <a href="{{ url_for('logout') }}" class="text-red-600 hover:text-red-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="{% if session.user_id %}mt-4{% else %}mt-0{% endif %} max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                {% for category, message in messages %}
+                    <div class="p-4 rounded-lg border-l-4 animate-fade-in mb-4
+                        {% if category == 'danger' %}
+                            bg-red-50 border-red-400 text-red-700
+                        {% elif category == 'success' %}
+                            bg-green-50 border-green-400 text-green-700
+                        {% elif category == 'warning' %}
+                            bg-yellow-50 border-yellow-400 text-yellow-700
+                        {% else %}
+                            bg-violet-50 border-violet-400 text-violet-700
+                        {% endif %}">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    {% if category == 'danger' %}
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                    {% elif category == 'success' %}
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    {% else %}
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                    {% endif %}
+                                </svg>
+                                <span class="text-sm font-medium">{{ message }}</span>
+                            </div>
+                            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-current opacity-70 hover:opacity-100 transition-opacity">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <!-- Main Content -->
+    <main class="flex-1">
+        {% block content %}
+        <!-- Page content goes here -->
+        {% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="mt-auto bg-white/30 backdrop-blur-sm border-t border-white/20 py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-xs text-gray-500">
+                © 2025 Made by 
+                <a href="https://shalitha.me" target="_blank" rel="noopener noreferrer" 
+                   class="text-violet-600 hover:text-violet-700 underline transition-colors duration-200">
+                    shalitha_me
+                </a>
+            </p>
+        </div>
+    </footer>
+    
+    <!-- Base JavaScript -->
+    <script>
+        // Auto-hide flash messages after 5 seconds
+        setTimeout(function() {
+            const messages = document.querySelectorAll('.animate-fade-in');
+            messages.forEach(message => {
+                if (message.classList.contains('bg-red-50') || 
+                    message.classList.contains('bg-green-50') || 
+                    message.classList.contains('bg-yellow-50') || 
+                    message.classList.contains('bg-violet-50')) {
+                    message.style.opacity = '0';
+                    message.style.transform = 'translateX(100%)';
+                    setTimeout(() => message.remove(), 300);
+                }
+            });
+        }, 5000);
+    </script>
+    
+    {% block scripts %}
+    <!-- Page-specific scripts go here -->
+    {% endblock %}
+</body>
+</html>

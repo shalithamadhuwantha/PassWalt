@@ -1,0 +1,17 @@
+technologies
+    python Flask
+    Tailwind CSS
+    My SQL
+software
+    php myadmin
+    VS Code
+    My SQL
+dependencies
+    python
+    Flask
+    Jinja2
+    bcrypt
+    cryptography
+
+
+

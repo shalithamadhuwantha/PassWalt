@@ -1,0 +1,424 @@
+{% extends "base.html" %}
+
+{% block title %}My Accounts - Password Wallet{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header Section -->
+    <div class="mb-8 animate-fade-in">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">My Accounts</h1>
+                <p class="text-gray-600">Manage your saved passwords and account information.</p>
+            </div>
+            <a href="{{ url_for('add_account') }}" class="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl shadow-lg hover:from-violet-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] font-medium">
+                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Add Account
+            </a>
+        </div>
+    </div>
+
+    <!-- Search and Filter Bar -->
+    <div class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-6 mb-6 animate-slide-up">
+        <div class="flex flex-col sm:flex-row gap-4">
+            <div class="flex-1">
+                <input type="text" id="searchInput" placeholder="Search by service name or username..." class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200">
+            </div>
+            <button onclick="togglePasswordVisibility()" id="toggleAllBtn" class="px-4 py-2 bg-violet-100 text-violet-700 rounded-xl hover:bg-violet-200 transition-all duration-200 font-medium">
+                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+                Show All Passwords
+            </button>
+        </div>
+    </div>
+
+    {% if accounts %}
+        <!-- Accounts Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="accountsGrid">
+            {% for acc in accounts %}
+            <div class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-6 animate-bounce-in account-card" style="animation-delay: {{ loop.index0 * 0.1 }}s;" data-service="{{ acc.service_name.lower() }}" data-username="{{ acc.account_user.lower() }}">
+                <!-- Service Header -->
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-r from-violet-500 to-purple-500 rounded-xl flex items-center justify-center mr-3">
+                            <span class="text-white font-bold text-lg">{{ acc.service_name[0].upper() }}</span>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800">{{ acc.service_name }}</h3>
+                            <p class="text-sm text-gray-500">Account #{{ acc.account_id }}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Actions Dropdown -->
+                    <div class="relative">
+                        <button onclick="toggleDropdown('dropdown-{{ acc.account_id }}')" class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-all duration-200">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                            </svg>
+                        </button>
+                        <div id="dropdown-{{ acc.account_id }}" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+                            <button onclick="editAccount({{ acc.account_id }}, '{{ acc.service_name }}', '{{ acc.account_user }}', '{{ acc.password }}')" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-violet-50 hover:text-violet-600 rounded-t-lg transition-colors duration-150">
+                                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                </svg>
+                                Edit Account
+                            </button>
+                            <button onclick="deleteAccount({{ acc.account_id }}, '{{ acc.service_name }}')" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-b-lg transition-colors duration-150">
+                                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                                Delete Account
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Details -->
+                <div class="space-y-3">
+                    <!-- Username -->
+                    <div>
+                        <label class="text-xs font-medium text-gray-500 uppercase tracking-wider">Username</label>
+                        <div class="flex items-center justify-between mt-1">
+                            <span class="text-gray-800 font-mono">{{ acc.account_user }}</span>
+                            <button onclick="copyToClipboard('{{ acc.account_user }}')" class="p-2 text-violet-600 hover:bg-violet-50 rounded-lg transition-all duration-200" title="Copy username">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div>
+                        <label class="text-xs font-medium text-gray-500 uppercase tracking-wider">Password</label>
+                        <div class="flex items-center justify-between mt-1">
+                            <span class="password-field font-mono text-gray-800" data-password="{{ acc.password }}">••••••••••••</span>
+                            <div class="flex space-x-1">
+                                <button onclick="togglePassword(this)" class="p-2 text-violet-600 hover:bg-violet-50 rounded-lg transition-all duration-200" title="Show/Hide password">
+                                    <svg class="w-4 h-4 eye-open" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                    <svg class="w-4 h-4 eye-closed hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+                                    </svg>
+                                </button>
+                                <button onclick="copyToClipboard('{{ acc.password }}')" class="p-2 text-violet-600 hover:bg-violet-50 rounded-lg transition-all duration-200" title="Copy password">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Last Updated -->
+                <div class="mt-4 pt-3 border-t border-gray-100">
+                    <p class="text-xs text-gray-500">
+                        <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Last updated: {{ acc.date_added.strftime('%B %d, %Y') if acc.date_added else 'Unknown' }}
+                    </p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-12 animate-fade-in">
+            <div class="inline-flex items-center justify-center w-24 h-24 bg-violet-100 rounded-full mb-6">
+                <svg class="w-12 h-12 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">No Accounts Yet</h3>
+            <p class="text-gray-600 mb-6">Start building your secure password vault by adding your first account.</p>
+            <a href="{{ url_for('add_account') }}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl shadow-lg hover:from-violet-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] font-medium">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Add Your First Account
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Edit Account Modal -->
+<div id="editModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-white/90 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 w-full max-w-md">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                    <div class="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-violet-500 to-purple-500 rounded-lg mr-3">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                    </div>
+                    Edit Account
+                </h2>
+                <button onclick="closeEditModal()" class="text-gray-500 hover:text-gray-700 p-2 rounded-lg hover:bg-gray-100 transition-all duration-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <form id="editForm" method="POST">
+                <input type="hidden" id="editAccountId" name="account_id">
+                
+                <div class="space-y-4">
+                    <div>
+                        <label for="editServiceName" class="block text-sm font-medium text-gray-700 mb-2">Service Name</label>
+                        <input type="text" id="editServiceName" name="service_name" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200">
+                    </div>
+                    
+                    <div>
+                        <label for="editAccountUser" class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                        <input type="text" id="editAccountUser" name="account_user" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200">
+                    </div>
+                    
+                    <div>
+                        <label for="editPassword" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                        <div class="relative">
+                            <input type="password" id="editPassword" name="account_password" required class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all duration-200">
+                            <button type="button" onclick="toggleEditPassword()" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-violet-600 hover:text-violet-700">
+                                <svg class="w-5 h-5 eye-open" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                                <svg class="w-5 h-5 eye-closed hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button type="button" onclick="generatePasswordForEdit()" class="w-full py-2 px-4 border border-violet-300 text-violet-700 bg-violet-50 rounded-xl hover:bg-violet-100 transition-all duration-200 font-medium">
+                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1721 9z"></path>
+                        </svg>
+                        Generate New Password
+                    </button>
+                </div>
+                
+                <div class="flex justify-end gap-4 mt-6">
+                    <button type="button" onclick="closeEditModal()" class="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-all duration-200 font-medium">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-6 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-lg hover:from-violet-700 hover:to-purple-700 transition-all duration-200 font-medium">
+                        Update Account
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    let allPasswordsVisible = false;
+    
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const cards = document.querySelectorAll('.account-card');
+        
+        cards.forEach(card => {
+            const service = card.dataset.service;
+            const username = card.dataset.username;
+            
+            if (service.includes(searchTerm) || username.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+    
+    // Toggle single password visibility
+    function togglePassword(button) {
+        const passwordField = button.closest('.flex').querySelector('.password-field');
+        const eyeOpen = button.querySelector('.eye-open');
+        const eyeClosed = button.querySelector('.eye-closed');
+        
+        if (passwordField.textContent === '••••••••••••') {
+            passwordField.textContent = passwordField.dataset.password;
+            eyeOpen.classList.add('hidden');
+            eyeClosed.classList.remove('hidden');
+        } else {
+            passwordField.textContent = '••••••••••••';
+            eyeOpen.classList.remove('hidden');
+            eyeClosed.classList.add('hidden');
+        }
+    }
+    
+    // Toggle all passwords visibility
+    function togglePasswordVisibility() {
+        const passwordFields = document.querySelectorAll('.password-field');
+        const toggleBtn = document.getElementById('toggleAllBtn');
+        
+        allPasswordsVisible = !allPasswordsVisible;
+        
+        passwordFields.forEach(field => {
+            if (allPasswordsVisible) {
+                field.textContent = field.dataset.password;
+            } else {
+                field.textContent = '••••••••••••';
+            }
+        });
+        
+        // Update button text and eye icons
+        if (allPasswordsVisible) {
+            toggleBtn.innerHTML = `
+                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"></path>
+                </svg>
+                Hide All Passwords
+            `;
+            
+            // Update individual eye icons
+            document.querySelectorAll('.eye-open').forEach(eye => eye.classList.add('hidden'));
+            document.querySelectorAll('.eye-closed').forEach(eye => eye.classList.remove('hidden'));
+        } else {
+            toggleBtn.innerHTML = `
+                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+                Show All Passwords
+            `;
+            
+            // Update individual eye icons
+            document.querySelectorAll('.eye-open').forEach(eye => eye.classList.remove('hidden'));
+            document.querySelectorAll('.eye-closed').forEach(eye => eye.classList.add('hidden'));
+        }
+    }
+    
+    // Copy to clipboard
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            // Show temporary feedback
+            const event = window.event;
+            const button = event.target.closest('button');
+            const originalHTML = button.innerHTML;
+            
+            button.innerHTML = '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>';
+            
+            setTimeout(() => {
+                button.innerHTML = originalHTML;
+            }, 2000);
+        });
+    }
+    
+    // Dropdown toggle
+    function toggleDropdown(dropdownId) {
+        // Close all other dropdowns
+        document.querySelectorAll('[id^="dropdown-"]').forEach(dropdown => {
+            if (dropdown.id !== dropdownId) {
+                dropdown.classList.add('hidden');
+            }
+        });
+        
+        // Toggle current dropdown
+        document.getElementById(dropdownId).classList.toggle('hidden');
+    }
+    
+    // Edit account modal
+    function editAccount(accountId, serviceName, accountUser, password) {
+        document.getElementById('editAccountId').value = accountId;
+        document.getElementById('editServiceName').value = serviceName;
+        document.getElementById('editAccountUser').value = accountUser;
+        document.getElementById('editPassword').value = password;
+        document.getElementById('editForm').action = `/update_account/${accountId}`;
+        document.getElementById('editModal').classList.remove('hidden');
+        
+        // Close dropdown
+        document.getElementById(`dropdown-${accountId}`).classList.add('hidden');
+    }
+    
+    function closeEditModal() {
+        document.getElementById('editModal').classList.add('hidden');
+    }
+    
+    // Delete account
+    function deleteAccount(accountId, serviceName) {
+        if (confirm(`Are you sure you want to delete the account for ${serviceName}? This action cannot be undone.`)) {
+            // Create and submit delete form
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/delete_account/${accountId}`;
+            
+            // Add CSRF token if you have one
+            const csrfToken = document.querySelector('meta[name=csrf-token]');
+            if (csrfToken) {
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = 'csrf_token';
+                tokenInput.value = csrfToken.getAttribute('content');
+                form.appendChild(tokenInput);
+            }
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+        
+        // Close dropdown
+        document.getElementById(`dropdown-${accountId}`).classList.add('hidden');
+    }
+    
+    // Toggle edit password visibility
+    function toggleEditPassword() {
+        const passwordInput = document.getElementById('editPassword');
+        const eyeOpen = document.querySelector('#editModal .eye-open');
+        const eyeClosed = document.querySelector('#editModal .eye-closed');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            eyeOpen.classList.add('hidden');
+            eyeClosed.classList.remove('hidden');
+        } else {
+            passwordInput.type = 'password';
+            eyeOpen.classList.remove('hidden');
+            eyeClosed.classList.add('hidden');
+        }
+    }
+    
+    // Generate password for edit form
+    function generatePasswordForEdit() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
+        let password = '';
+        for (let i = 0; i < 16; i++) {
+            password += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        document.getElementById('editPassword').value = password;
+    }
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.relative')) {
+            document.querySelectorAll('[id^="dropdown-"]').forEach(dropdown => {
+                dropdown.classList.add('hidden');
+            });
+        }
+    });
+    
+    // Close modal when clicking outside
+    document.getElementById('editModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeEditModal();
+        }
+    });
+    
+    // Escape key to close modal
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !document.getElementById('editModal').classList.contains('hidden')) {
+            closeEditModal();
+        }
+    });
+</script>
+{% endblock %}

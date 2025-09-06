@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Monitor - Password Wallet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-50 flex flex-col">
+    <!-- Navigation -->
+    <nav class="bg-white/80 backdrop-blur-lg shadow-sm border-b border-white/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <div class="w-8 h-8 bg-gradient-to-r from-violet-600 to-purple-600 rounded-lg mr-3"></div>
+                        <span class="text-xl font-bold text-gray-800">Password Wallet</span>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="{{ url_for('dashboard') }}" class="text-gray-600 hover:text-violet-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Dashboard</a>
+                    <a href="{{ url_for('view_accounts') }}" class="text-gray-600 hover:text-violet-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Accounts</a>
+                    <a href="{{ url_for('add_account') }}" class="text-gray-600 hover:text-violet-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Add Account</a>
+                    <a href="{{ url_for('login_monitor') }}" class="text-violet-600 px-3 py-2 rounded-md text-sm font-medium bg-violet-100">Monitor</a>
+                    <a href="{{ url_for('logout') }}" class="text-red-600 hover:text-red-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <!-- Header -->
+            <div class="mb-8 animate-slide-up">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Login Monitor</h1>
+                <p class="text-gray-600">Track and monitor all login activities for enhanced security</p>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-fade-in">
+                <div class="bg-white/80 backdrop-blur-lg rounded-xl shadow-lg border border-white/20 p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-violet-100">
+                            <svg class="w-6 h-6 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Total Attempts</p>
+                            <p class="text-2xl font-bold text-gray-900">{{ stats.total_attempts }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white/80 backdrop-blur-lg rounded-xl shadow-lg border border-white/20 p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-green-100">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Successful Logins</p>
+                            <p class="text-2xl font-bold text-gray-900">{{ stats.successful_logins }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white/80 backdrop-blur-lg rounded-xl shadow-lg border border-white/20 p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-red-100">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Failed Attempts</p>
+                            <p class="text-2xl font-bold text-gray-900">{{ stats.failed_attempts }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white/80 backdrop-blur-lg rounded-xl shadow-lg border border-white/20 p-6">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-blue-100">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Unique IPs</p>
+                            <p class="text-2xl font-bold text-gray-900">{{ stats.unique_ips }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Daily Statistics -->
+            {% if daily_stats %}
+            <div class="bg-white/80 backdrop-blur-lg rounded-xl shadow-lg border border-white/20 p-6 mb-8 animate-fade-in">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Last 7 Days Activity</h3>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr class="border-b border-gray-200">
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Date</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Total Attempts</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Successful</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Success Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            {% for day in daily_stats %}
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-4 py-3 text-sm text-gray-900">{{ day.login_date.strftime('%Y-%m-%d') }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-900">{{ day.attempts }}</td>
+                                <td class="px-4 py-3 text-sm text-green-600 font-medium">{{ day.successful }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-900">
+                                    {% set success_rate = (day.successful / day.attempts * 100) if day.attempts > 0 else 0 %}
+                                    <span class="px-2 py-1 text-xs font-medium rounded-full 
+                                        {% if success_rate == 100 %}bg-green-100 text-green-800
+                                        {% elif success_rate >= 80 %}bg-yellow-100 text-yellow-800
+                                        {% else %}bg-red-100 text-red-800{% endif %}">
+                                        {{ "%.1f"|format(success_rate) }}%
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Login History -->
+            <div class="bg-white/80 backdrop-blur-lg rounded-xl shadow-lg border border-white/20 p-6 animate-fade-in">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900">Recent Login Activity</h3>
+                    <div class="flex space-x-2">
+                        <button onclick="showUserLogins()" id="userBtn" class="px-4 py-2 text-sm font-medium text-white bg-violet-600 rounded-lg hover:bg-violet-700 transition-colors">
+                            My Logins
+                        </button>
+                        <!-- Show "All Users" button only for admin -->
+                        {% if session.is_admin or session.username == 'admin' %}
+                        <button onclick="showAllLogins()" id="allBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors">
+                            All Users
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- User Logins Table -->
+                <div id="userLogins" class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr class="border-b border-gray-200">
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Time</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">IP Address</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Status</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Device Info</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            {% for login in user_logins %}
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-4 py-3 text-sm text-gray-900">{{ login.login_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-900 font-mono">{{ login.ip_address or 'Unknown' }}</td>
+                                <td class="px-4 py-3 text-sm">
+                                    {% if login.status == 'Success' %}
+                                        <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Success</span>
+                                    {% else %}
+                                        <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Failed</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-600">{{ login.device_info or 'Not recorded' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- All Logins Table (Hidden by default, only for admin) -->
+                {% if session.is_admin or session.username == 'admin' %}
+                <div id="allLogins" class="overflow-x-auto hidden">
+                    <table class="min-w-full">
+                        <thead>
+                            <tr class="border-b border-gray-200">
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">User</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Time</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">IP Address</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-600">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            {% for login in all_logins %}
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ login.username }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-900">{{ login.login_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-900 font-mono">{{ login.ip_address or 'Unknown' }}</td>
+                                <td class="px-4 py-3 text-sm">
+                                    {% if login.status == 'Success' %}
+                                        <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Success</span>
+                                    {% else %}
+                                        <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Failed</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
+
+                {% if not user_logins %}
+                <div class="text-center py-8">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">No login history</h3>
+                    <p class="mt-1 text-sm text-gray-500">No login attempts have been recorded yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto bg-white/30 backdrop-blur-sm border-t border-white/20 py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p class="text-xs text-gray-500">
+                © 2025 Made by 
+                <a href="https://github.com/shalitha_me" target="_blank" rel="noopener noreferrer" 
+                   class="text-violet-600 hover:text-violet-700 underline transition-colors duration-200">
+                    shalitha_me
+                </a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        function showUserLogins() {
+            document.getElementById('userLogins').classList.remove('hidden');
+            
+            // Only hide allLogins if admin
+            {% if session.is_admin or session.username == 'admin' %}
+            document.getElementById('allLogins').classList.add('hidden');
+            {% endif %}
+            
+            // Update button styles
+            document.getElementById('userBtn').classList.remove('bg-gray-200', 'text-gray-700');
+            document.getElementById('userBtn').classList.add('bg-violet-600', 'text-white');
+            
+            {% if session.is_admin or session.username == 'admin' %}
+            document.getElementById('allBtn').classList.remove('bg-violet-600', 'text-white');
+            document.getElementById('allBtn').classList.add('bg-gray-200', 'text-gray-700');
+            {% endif %}
+        }
+
+        {% if session.is_admin or session.username == 'admin' %}
+        function showAllLogins() {
+            document.getElementById('userLogins').classList.add('hidden');
+            document.getElementById('allLogins').classList.remove('hidden');
+            
+            // Update button styles
+            document.getElementById('allBtn').classList.remove('bg-gray-200', 'text-gray-700');
+            document.getElementById('allBtn').classList.add('bg-violet-600', 'text-white');
+            document.getElementById('userBtn').classList.remove('bg-violet-600', 'text-white');
+            document.getElementById('userBtn').classList.add('bg-gray-200', 'text-gray-700');
+        }
+        {% endif %}
+    </script>
+</body>
+</html>

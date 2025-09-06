@@ -1,0 +1,741 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Password Wallet{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Welcome Section -->
+    <div class="mb-8 animate-fade-in">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Welcome back, {{ session.username }}!</h1>
+        <p class="text-gray-600">Here's what's happening with your password wallet today.</p>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total Users Card -->
+        <div class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-6 text-center animate-bounce-in">
+            <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-violet-500 to-purple-500 rounded-xl mb-4">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-700 mb-2">Total Users</h2>
+            <p class="text-3xl font-bold text-violet-600">{{ stats.total_users }}</p>
+            <p class="text-sm text-gray-500 mt-2">System wide</p>
+        </div>
+        
+        <!-- Total Logins Card -->
+        <div class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-6 text-center animate-bounce-in" style="animation-delay: 0.1s;">
+            <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl mb-4">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-700 mb-2">Total Logins</h2>
+            <p class="text-3xl font-bold text-green-600">{{ stats.total_logins }}</p>
+            <p class="text-sm text-gray-500 mt-2">All time</p>
+        </div>
+        
+        <!-- Active Users Card -->
+        <div class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-6 text-center animate-bounce-in" style="animation-delay: 0.2s;">
+            <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl mb-4">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-700 mb-2">Active Users</h2>
+            <p class="text-3xl font-bold text-blue-600">{{ stats.active_users }}</p>
+            <p class="text-sm text-gray-500 mt-2">With successful logins</p>
+        </div>
+        
+        <!-- Crypto Tools Card -->
+        <div class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-6 text-center animate-bounce-in" style="animation-delay: 0.3s;">
+            <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl mb-4">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-gray-700 mb-2">Crypto Tools</h2>
+            <p class="text-3xl font-bold text-yellow-600">15+</p>
+            <p class="text-sm text-gray-500 mt-2">Available algorithms</p>
+        </div>
+    </div>
+    
+    <!-- Action Buttons and Tools -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Password Generator Section -->
+        <div class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-6 animate-slide-up">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                <div class="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-violet-500 to-purple-500 rounded-lg mr-3">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1721 9z"></path>
+                    </svg>
+                </div>
+                Password Generator
+            </h3>
+            <p class="text-gray-600 mb-6">Generate secure passwords for your accounts.</p>
+            
+            <!-- Password Options -->
+            <div class="space-y-4 mb-6">
+                <div class="flex items-center justify-between">
+                    <label class="text-sm font-medium text-gray-700">Length:</label>
+                    <input type="range" id="passwordLength" min="8" max="32" value="16" class="w-32 h-2 bg-violet-200 rounded-lg slider">
+                    <span id="lengthDisplay" class="text-sm font-medium text-violet-600 w-8">16</span>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="includeUppercase" checked class="w-4 h-4 text-violet-600 bg-gray-100 border-gray-300 rounded focus:ring-violet-500">
+                        <span class="ml-2 text-sm text-gray-700">Uppercase</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" id="includeLowercase" checked class="w-4 h-4 text-violet-600 bg-gray-100 border-gray-300 rounded focus:ring-violet-500">
+                        <span class="ml-2 text-sm text-gray-700">Lowercase</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" id="includeNumbers" checked class="w-4 h-4 text-violet-600 bg-gray-100 border-gray-300 rounded focus:ring-violet-500">
+                        <span class="ml-2 text-sm text-gray-700">Numbers</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="checkbox" id="includeSymbols" checked class="w-4 h-4 text-violet-600 bg-gray-100 border-gray-300 rounded focus:ring-violet-500">
+                        <span class="ml-2 text-sm text-gray-700">Symbols</span>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Generated Password Display -->
+            <div class="mb-4">
+                <div class="flex items-center space-x-2">
+                    <div class="flex-1 p-3 bg-violet-50 border border-violet-200 rounded-xl font-mono text-sm text-violet-800 break-all" id="generatedPassword">
+                        Click "Generate" to create a secure password
+                    </div>
+                    <button onclick="copyPassword()" class="p-3 bg-violet-100 hover:bg-violet-200 text-violet-600 rounded-xl transition-all duration-200" title="Copy password">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <button onclick="generatePassword()" class="w-full py-3 px-4 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-xl shadow-lg hover:from-violet-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] font-medium">
+                Generate Secure Password
+            </button>
+        </div>
+        
+        <!-- Enhanced Crypto Tools Section -->
+        <div class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-6 animate-slide-up" style="animation-delay: 0.1s;">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+                <div class="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg mr-3">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                </div>
+                Cryptographic Utilities
+            </h3>
+            
+            <!-- Tab Navigation -->
+            <div class="flex mb-6 bg-gray-100 rounded-lg p-1">
+                <button onclick="switchTab('encoding')" id="encodingTab" class="flex-1 py-2 px-4 text-sm font-medium rounded-md bg-white text-gray-900 shadow-sm transition-all duration-200">
+                    Encoding & Encryption
+                </button>
+                <button onclick="switchTab('hashing')" id="hashingTab" class="flex-1 py-2 px-4 text-sm font-medium rounded-md text-gray-600 hover:text-gray-900 transition-all duration-200">
+                    Hashing
+                </button>
+            </div>
+            
+            <!-- Input Text -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Input Text</label>
+                <textarea 
+                    id="cryptoInput" 
+                    placeholder="Enter text to process..." 
+                    class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors resize-none"
+                    rows="3"></textarea>
+            </div>
+            
+            <!-- Encoding & Encryption Tab -->
+            <div id="encodingContent">
+                <!-- Algorithm Selection -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Algorithm</label>
+                    <select id="encodingAlgorithm" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                        <option value="base64">Base64 Encode/Decode</option>
+                        <option value="url">URL Encode/Decode</option>
+                        <option value="hex">Hex Encode/Decode</option>
+                        <option value="binary">Binary Encode/Decode</option>
+                        <option value="ascii85">ASCII85 Encode/Decode</option>
+                        <option value="rot13">ROT13 Cipher</option>
+                        <option value="caesar">Caesar Cipher</option>
+                        <option value="atbash">Atbash Cipher</option>
+                    </select>
+                </div>
+                
+                <!-- Caesar Cipher Key (shown only for Caesar) -->
+                <div id="caesarKey" class="mb-4 hidden">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Caesar Shift (1-25)</label>
+                    <input type="number" id="caesarShift" min="1" max="25" value="3" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="grid grid-cols-2 gap-2 mb-4">
+                    <button onclick="performEncoding('encode')" class="py-2 px-3 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium">
+                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                        Encode/Encrypt
+                    </button>
+                    <button onclick="performEncoding('decode')" class="py-2 px-3 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium">
+                        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path>
+                        </svg>
+                        Decode/Decrypt
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Hashing Tab -->
+            <div id="hashingContent" class="hidden">
+                <!-- Algorithm Selection -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Hash Algorithm</label>
+                    <select id="hashAlgorithm" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                        <option value="md5">MD5 (128-bit)</option>
+                        <option value="sha1">SHA-1 (160-bit)</option>
+                        <option value="sha256" selected>SHA-256 (256-bit)</option>
+                        <option value="sha384">SHA-384 (384-bit)</option>
+                        <option value="sha512">SHA-512 (512-bit)</option>
+                        <option value="sha3">SHA-3 (256-bit)</option>
+                        <option value="ripemd160">RIPEMD-160</option>
+                        <option value="hmacSha256">HMAC-SHA256</option>
+                        <option value="pbkdf2">PBKDF2</option>
+                    </select>
+                </div>
+                
+                <!-- HMAC Key (shown only for HMAC) -->
+                <div id="hmacKey" class="mb-4 hidden">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">HMAC Secret Key</label>
+                    <input type="text" id="hmacSecret" placeholder="Enter secret key for HMAC" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                </div>
+                
+                <!-- PBKDF2 Options (shown only for PBKDF2) -->
+                <div id="pbkdf2Options" class="mb-4 hidden">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Salt</label>
+                            <input type="text" id="pbkdf2Salt" placeholder="Salt" value="salt123" class="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-700 mb-1">Iterations</label>
+                            <input type="number" id="pbkdf2Iterations" value="10000" min="1000" class="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Hash Button -->
+                <button onclick="performHashing()" class="w-full py-2 px-3 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium mb-4">
+                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    </svg>
+                    Generate Hash
+                </button>
+            </div>
+            
+            <!-- Output Text -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Output</label>
+                <div class="flex items-start space-x-2">
+                    <textarea 
+                        id="cryptoOutput" 
+                        readonly 
+                        placeholder="Results will appear here..." 
+                        class="flex-1 p-3 bg-gray-50 border border-gray-300 rounded-xl font-mono text-sm resize-none"
+                        rows="4"></textarea>
+                    <button onclick="copyCryptoOutput()" class="p-3 bg-orange-100 hover:bg-orange-200 text-orange-600 rounded-xl transition-all duration-200" title="Copy output">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions Section -->
+    <div class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-6 animate-slide-up" style="animation-delay: 0.2s;">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+            <div class="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg mr-3">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+            </div>
+            Quick Actions
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <a href="{{ url_for('login_monitor') }}" class="flex items-center justify-between p-3 bg-violet-50 hover:bg-violet-100 text-violet-700 rounded-xl transition-all duration-200 group">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Login History
+                </div>
+                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </a>
+            
+            <a href="{{ url_for('add_account') }}" class="flex items-center justify-between p-3 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl transition-all duration-200 group">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Add Account
+                </div>
+                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </a>
+            
+            <a href="{{ url_for('view_accounts') }}" class="flex items-center justify-between p-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl transition-all duration-200 group">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                    </svg>
+                    View Accounts
+                </div>
+                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </a>
+            
+            <button onclick="generateAndShowPassword()" class="flex items-center justify-between p-3 bg-orange-50 hover:bg-orange-100 text-orange-700 rounded-xl transition-all duration-200 group">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1721 9z"></path>
+                    </svg>
+                    Quick Password
+                </div>
+                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Password Generator Modal -->
+<div id="passwordModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div class="bg-white/90 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 w-full max-w-md">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                    <div class="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-r from-violet-500 to-purple-500 rounded-lg mr-3">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1721 9z"></path>
+                        </svg>
+                    </div>
+                    Quick Password
+                </h2>
+                <button onclick="closePasswordModal()" class="text-gray-500 hover:text-gray-700 p-2 rounded-lg hover:bg-gray-100 transition-all duration-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="mb-4">
+                <div class="flex items-center space-x-2">
+                    <div class="flex-1 p-3 bg-violet-50 border border-violet-200 rounded-xl font-mono text-sm text-violet-800 break-all" id="quickPassword">
+                        Generated password will appear here
+                    </div>
+                    <button onclick="copyQuickPassword()" class="p-3 bg-violet-100 hover:bg-violet-200 text-violet-600 rounded-xl transition-all duration-200" title="Copy password">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="flex justify-center gap-4">
+                <button onclick="generateQuickPassword()" class="px-6 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-lg hover:from-violet-700 hover:to-purple-700 transition-all duration-200 font-medium">
+                    Generate New
+                </button>
+                <button onclick="closePasswordModal()" class="px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-all duration-200 font-medium">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Password length slider
+    const passwordLength = document.getElementById('passwordLength');
+    const lengthDisplay = document.getElementById('lengthDisplay');
+    
+    passwordLength.addEventListener('input', function() {
+        lengthDisplay.textContent = this.value;
+    });
+    
+    // Password generator function
+    function generatePassword() {
+        const length = parseInt(document.getElementById('passwordLength').value);
+        const includeUppercase = document.getElementById('includeUppercase').checked;
+        const includeLowercase = document.getElementById('includeLowercase').checked;
+        const includeNumbers = document.getElementById('includeNumbers').checked;
+        const includeSymbols = document.getElementById('includeSymbols').checked;
+        
+        let charset = '';
+        if (includeUppercase) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        if (includeLowercase) charset += 'abcdefghijklmnopqrstuvwxyz';
+        if (includeNumbers) charset += '0123456789';
+        if (includeSymbols) charset += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+        
+        if (charset === '') {
+            alert('Please select at least one character type');
+            return;
+        }
+        
+        let password = '';
+        for (let i = 0; i < length; i++) {
+            password += charset.charAt(Math.floor(Math.random() * charset.length));
+        }
+        
+        document.getElementById('generatedPassword').textContent = password;
+    }
+    
+    // Copy password function
+    function copyPassword() {
+        const passwordText = document.getElementById('generatedPassword').textContent;
+        if (passwordText !== 'Click "Generate" to create a secure password') {
+            navigator.clipboard.writeText(passwordText).then(() => {
+                showCopyFeedback(event.target.closest('button'));
+            });
+        }
+    }
+    
+    // Quick password functions
+    function generateAndShowPassword() {
+        generateQuickPassword();
+        document.getElementById('passwordModal').classList.remove('hidden');
+    }
+    
+    function generateQuickPassword() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
+        let password = '';
+        for (let i = 0; i < 16; i++) {
+            password += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        document.getElementById('quickPassword').textContent = password;
+    }
+    
+    function copyQuickPassword() {
+        const passwordText = document.getElementById('quickPassword').textContent;
+        if (passwordText !== 'Generated password will appear here') {
+            navigator.clipboard.writeText(passwordText).then(() => {
+                showCopyFeedback(event.target.closest('button'));
+            });
+        }
+    }
+    
+    function closePasswordModal() {
+        document.getElementById('passwordModal').classList.add('hidden');
+    }
+    
+    // Tab switching
+    function switchTab(tab) {
+        const encodingTab = document.getElementById('encodingTab');
+        const hashingTab = document.getElementById('hashingTab');
+        const encodingContent = document.getElementById('encodingContent');
+        const hashingContent = document.getElementById('hashingContent');
+        
+        if (tab === 'encoding') {
+            encodingTab.classList.add('bg-white', 'text-gray-900', 'shadow-sm');
+            encodingTab.classList.remove('text-gray-600', 'hover:text-gray-900');
+            hashingTab.classList.remove('bg-white', 'text-gray-900', 'shadow-sm');
+            hashingTab.classList.add('text-gray-600', 'hover:text-gray-900');
+            encodingContent.classList.remove('hidden');
+            hashingContent.classList.add('hidden');
+        } else {
+            hashingTab.classList.add('bg-white', 'text-gray-900', 'shadow-sm');
+            hashingTab.classList.remove('text-gray-600', 'hover:text-gray-900');
+            encodingTab.classList.remove('bg-white', 'text-gray-900', 'shadow-sm');
+            encodingTab.classList.add('text-gray-600', 'hover:text-gray-900');
+            hashingContent.classList.remove('hidden');
+            encodingContent.classList.add('hidden');
+        }
+    }
+    
+    // Show/hide algorithm-specific options
+    document.getElementById('encodingAlgorithm').addEventListener('change', function() {
+        const caesarKey = document.getElementById('caesarKey');
+        if (this.value === 'caesar') {
+            caesarKey.classList.remove('hidden');
+        } else {
+            caesarKey.classList.add('hidden');
+        }
+    });
+    
+    document.getElementById('hashAlgorithm').addEventListener('change', function() {
+        const hmacKey = document.getElementById('hmacKey');
+        const pbkdf2Options = document.getElementById('pbkdf2Options');
+        
+        if (this.value === 'hmacSha256') {
+            hmacKey.classList.remove('hidden');
+            pbkdf2Options.classList.add('hidden');
+        } else if (this.value === 'pbkdf2') {
+            pbkdf2Options.classList.remove('hidden');
+            hmacKey.classList.add('hidden');
+        } else {
+            hmacKey.classList.add('hidden');
+            pbkdf2Options.classList.add('hidden');
+        }
+    });
+    
+    // Encoding functions
+    function performEncoding(operation) {
+        const input = document.getElementById('cryptoInput').value;
+        const output = document.getElementById('cryptoOutput');
+        const algorithm = document.getElementById('encodingAlgorithm').value;
+        
+        if (!input.trim()) {
+            alert('Please enter some text to process');
+            return;
+        }
+        
+        try {
+            let result = '';
+            
+            switch(algorithm) {
+                case 'base64':
+                    if (operation === 'encode') {
+                        result = btoa(unescape(encodeURIComponent(input)));
+                    } else {
+                        result = decodeURIComponent(escape(atob(input)));
+                    }
+                    break;
+                    
+                case 'url':
+                    if (operation === 'encode') {
+                        result = encodeURIComponent(input);
+                    } else {
+                        result = decodeURIComponent(input);
+                    }
+                    break;
+                    
+                case 'hex':
+                    if (operation === 'encode') {
+                        result = Array.from(input).map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join('');
+                    } else {
+                        result = input.match(/.{1,2}/g).map(byte => String.fromCharCode(parseInt(byte, 16))).join('');
+                    }
+                    break;
+                    
+                case 'binary':
+                    if (operation === 'encode') {
+                        result = Array.from(input).map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join(' ');
+                    } else {
+                        result = input.split(' ').map(binary => String.fromCharCode(parseInt(binary, 2))).join('');
+                    }
+                    break;
+                    
+                case 'ascii85':
+                    if (operation === 'encode') {
+                        result = ascii85Encode(input);
+                    } else {
+                        result = ascii85Decode(input);
+                    }
+                    break;
+                    
+                case 'rot13':
+                    result = input.replace(/[a-zA-Z]/g, function(c) {
+                        return String.fromCharCode((c <= 'Z' ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26);
+                    });
+                    break;
+                    
+                case 'caesar':
+                    const shift = parseInt(document.getElementById('caesarShift').value) || 3;
+                    const actualShift = operation === 'encode' ? shift : -shift;
+                    result = input.replace(/[a-zA-Z]/g, function(c) {
+                        const start = c <= 'Z' ? 65 : 97;
+                        return String.fromCharCode(((c.charCodeAt(0) - start + actualShift + 26) % 26) + start);
+                    });
+                    break;
+                    
+                case 'atbash':
+                    result = input.replace(/[a-zA-Z]/g, function(c) {
+                        if (c <= 'Z') {
+                            return String.fromCharCode(155 - c.charCodeAt(0));
+                        } else {
+                            return String.fromCharCode(219 - c.charCodeAt(0));
+                        }
+                    });
+                    break;
+                    
+                default:
+                    result = 'Unknown algorithm';
+            }
+            
+            output.value = result;
+        } catch (error) {
+            output.value = 'Error: ' + error.message;
+        }
+    }
+    
+    // Hashing function
+    function performHashing() {
+        const input = document.getElementById('cryptoInput').value;
+        const output = document.getElementById('cryptoOutput');
+        const algorithm = document.getElementById('hashAlgorithm').value;
+        
+        if (!input.trim()) {
+            alert('Please enter some text to hash');
+            return;
+        }
+        
+        try {
+            let result = '';
+            
+            switch(algorithm) {
+                case 'md5':
+                    result = CryptoJS.MD5(input).toString();
+                    break;
+                case 'sha1':
+                    result = CryptoJS.SHA1(input).toString();
+                    break;
+                case 'sha256':
+                    result = CryptoJS.SHA256(input).toString();
+                    break;
+                case 'sha384':
+                    result = CryptoJS.SHA384(input).toString();
+                    break;
+                case 'sha512':
+                    result = CryptoJS.SHA512(input).toString();
+                    break;
+                case 'sha3':
+                    result = CryptoJS.SHA3(input).toString();
+                    break;
+                case 'ripemd160':
+                    result = CryptoJS.RIPEMD160(input).toString();
+                    break;
+                case 'hmacSha256':
+                    const secret = document.getElementById('hmacSecret').value;
+                    if (!secret) {
+                        alert('Please enter a secret key for HMAC');
+                        return;
+                    }
+                    result = CryptoJS.HmacSHA256(input, secret).toString();
+                    break;
+                case 'pbkdf2':
+                    const salt = document.getElementById('pbkdf2Salt').value;
+                    const iterations = parseInt(document.getElementById('pbkdf2Iterations').value);
+                    result = CryptoJS.PBKDF2(input, salt, { keySize: 256/32, iterations: iterations }).toString();
+                    break;
+                default:
+                    result = 'Unknown hash algorithm';
+            }
+            
+            output.value = result;
+        } catch (error) {
+            output.value = 'Error: ' + error.message;
+        }
+    }
+    
+    // ASCII85 encode/decode functions
+    function ascii85Encode(input) {
+        // Simplified ASCII85 implementation
+        let result = '';
+        const bytes = new TextEncoder().encode(input);
+        
+        for (let i = 0; i < bytes.length; i += 4) {
+            let chunk = 0;
+            let chunkSize = Math.min(4, bytes.length - i);
+            
+            for (let j = 0; j < chunkSize; j++) {
+                chunk = chunk * 256 + bytes[i + j];
+            }
+            
+            if (chunk === 0 && chunkSize === 4) {
+                result += 'z';
+            } else {
+                let encoded = '';
+                for (let j = 0; j < 5; j++) {
+                    encoded = String.fromCharCode(33 + (chunk % 85)) + encoded;
+                    chunk = Math.floor(chunk / 85);
+                }
+                result += encoded.substring(0, chunkSize + 1);
+            }
+        }
+        
+        return '<~' + result + '~>';
+    }
+    
+    function ascii85Decode(input) {
+        // Simplified ASCII85 implementation
+        input = input.replace(/^<~|~>$/g, '');
+        let result = [];
+        
+        for (let i = 0; i < input.length; i += 5) {
+            let chunk = input.substring(i, i + 5);
+            
+            if (chunk === 'z') {
+                result.push(0, 0, 0, 0);
+                continue;
+            }
+            
+            let value = 0;
+            for (let j = 0; j < chunk.length; j++) {
+                value = value * 85 + (chunk.charCodeAt(j) - 33);
+            }
+            
+            for (let j = 3; j >= 0; j--) {
+                if (i + j < input.length) {
+                    result.unshift(value & 0xFF);
+                }
+                value >>= 8;
+            }
+        }
+        
+        return new TextDecoder().decode(new Uint8Array(result));
+    }
+    
+    function copyCryptoOutput() {
+        const outputText = document.getElementById('cryptoOutput').value;
+        if (outputText && outputText !== 'Results will appear here...') {
+            navigator.clipboard.writeText(outputText).then(() => {
+                showCopyFeedback(event.target.closest('button'), 'orange');
+            });
+        }
+    }
+    
+    function showCopyFeedback(button, color = 'violet') {
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>';
+        
+        // Remove existing color classes and add new ones
+        button.className = button.className.replace(/bg-\w+-\d+|text-\w+-\d+/g, '');
+        button.classList.add('bg-green-100', 'text-green-600');
+        
+        setTimeout(() => {
+            button.innerHTML = originalHTML;
+            button.className = button.className.replace(/bg-green-\d+|text-green-\d+/g, '');
+            button.classList.add(`bg-${color}-100`, `text-${color}-600`);
+        }, 2000);
+    }
+    
+    // Close modal when clicking outside
+    document.getElementById('passwordModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closePasswordModal();
+        }
+    });
+    
+    // Escape key to close modal
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !document.getElementById('passwordModal').classList.contains('hidden')) {
+            closePasswordModal();
+        }
+    });
+</script>
+
+<!-- Add CryptoJS library for hashing -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+{% endblock %}
